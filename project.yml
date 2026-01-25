@@ -1,0 +1,46 @@
+name: ndi_flow
+options:
+  bundleIdPrefix: com.ndiflow
+  deploymentTarget:
+    macOS: "15.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    PRODUCT_BUNDLE_IDENTIFIER: com.ndiflow.app
+    INFOPLIST_FILE: ndi_flow/Resources/Info.plist
+    GENERATE_INFOPLIST_FILE: NO
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_STRICT_CONCURRENCY: minimal
+    CODE_SIGN_ENTITLEMENTS: ndi_flow.entitlements
+    CODE_SIGN_IDENTITY: "-"
+
+targets:
+  ndi_flow:
+    type: application
+    platform: macOS
+    sources:
+      - path: ndi_flow
+        excludes:
+          - "**/.DS_Store"
+      - path: Assets.xcassets
+    settings:
+      base:
+        PRODUCT_NAME: ndi_flow
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+    entitlements:
+      path: ndi_flow.entitlements
+    dependencies:
+      - sdk: NaturalLanguage.framework
+      - sdk: Vision.framework
+      - sdk: CoreML.framework
+      - sdk: QuickLookThumbnailing.framework
+      - sdk: PDFKit.framework
+      - sdk: Accelerate.framework
+      - sdk: CloudKit.framework
