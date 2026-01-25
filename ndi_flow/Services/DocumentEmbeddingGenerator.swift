@@ -144,16 +144,9 @@ public actor DocumentEmbeddingGenerator {
         let vector: [Float]
         let targetDimension = self.expectedDimension
 
-        // Try to generate embedding - if it fails for any reason, return zero vector
-        // rather than crashing the entire app
-        let generatedVector: [Float]?
-        do {
-            generatedVector = model.floatVector(for: trimmed)
-        } catch {
-            // This shouldn't happen since floatVector doesn't throw, but be defensive
-            logger.error("Unexpected error generating embedding: \(String(describing: error))")
-            generatedVector = nil
-        }
+        // Generate embedding - floatVector returns nil on failure (doesn't throw)
+        // Input is already sanitized within floatVector to reduce crash risk
+        let generatedVector = model.floatVector(for: trimmed)
 
         if let v = generatedVector, !v.isEmpty {
             // Validate dimension, and adjust if necessary (pad or trim).

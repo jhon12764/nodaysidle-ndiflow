@@ -35,6 +35,9 @@ final class FolderMonitoringService: ObservableObject {
     // Track which folders are being monitored and their workspace associations
     private var folderWorkspaceMap: [URL: UUID] = [:] // folderURL -> workspaceID
 
+    // Track folders with active security-scoped access so we can release them on stop
+    private var accessingFolders: [MonitoredFolderEntity] = []
+
     private init() {}
 
     // MARK: - Public API
@@ -67,10 +70,13 @@ final class FolderMonitoringService: ObservableObject {
         // Build URL list and workspace map
         var urls: [URL] = []
         folderWorkspaceMap.removeAll()
+        accessingFolders.removeAll()
 
         for folder in enabledFolders {
-            // Start security-scoped access
-            _ = folder.startAccessing()
+            // Start security-scoped access and track it for cleanup
+            if folder.startAccessing() {
+                accessingFolders.append(folder)
+            }
 
             if let resolved = folder.resolveBookmark() {
                 urls.append(resolved)
@@ -112,6 +118,13 @@ final class FolderMonitoringService: ObservableObject {
         monitor = nil
         isMonitoring = false
         folderWorkspaceMap.removeAll()
+
+        // Release security-scoped access for all tracked folders
+        for folder in accessingFolders {
+            folder.stopAccessing()
+        }
+        accessingFolders.removeAll()
+
         logger.log("Stopped folder monitoring")
     }
 

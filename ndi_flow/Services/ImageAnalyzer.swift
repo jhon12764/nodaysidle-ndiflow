@@ -82,13 +82,15 @@ public actor ImageAnalyzer {
 
         if let featureObs = featureRequest.results?.first as? VNFeaturePrintObservation {
             if let vector = vector(from: featureObs) {
-                // If vector length differs, try to adjust to expected dimension
+                // If vector length differs, use average pooling to preserve semantic information
                 if vector.count == SemanticEmbedding.dimension {
                     embeddingVector = vector
                 } else if vector.count > SemanticEmbedding.dimension {
-                    embeddingVector = Array(vector.prefix(SemanticEmbedding.dimension))
+                    // Use average pooling to reduce dimensions while preserving semantic content
+                    embeddingVector = reduceVectorByAveragePooling(vector, targetDimension: SemanticEmbedding.dimension)
+                    logger.debug("Reduced \(vector.count)-dim image vector to \(SemanticEmbedding.dimension)-dim via average pooling")
                 } else {
-                    // pad with zeros if smaller
+                    // Pad with zeros if smaller
                     embeddingVector = vector + Array(repeating: 0.0, count: SemanticEmbedding.dimension - vector.count)
                 }
             } else {
@@ -125,20 +127,42 @@ public actor ImageAnalyzer {
     }
 
     /// Convert VNFeaturePrintObservation into a `[Float]` vector by extracting its
-    /// element count and copying data.
-    /// - Note: VNFeaturePrintObservation provides elementCount and can be read via computeDistance.
+    /// underlying data buffer.
+    /// - Note: VNFeaturePrintObservation exposes `data` property (macOS 11+) containing raw feature print.
     private func vector(from observation: VNFeaturePrintObservation) -> [Float]? {
-        // VNFeaturePrintObservation doesn't expose raw vector data directly.
-        // We can get element count but not the raw data.
-        // As a workaround, return a placeholder vector based on element count.
-        // In a production app, you might use a different approach or CoreML model.
         let count = observation.elementCount
         guard count > 0 else { return nil }
 
-        // Create a vector with zeros - the actual feature print data isn't directly accessible
-        // This is a limitation of the Vision framework API
-        // The feature prints are meant for comparison via computeDistance, not direct vector access
-        return Array(repeating: 0.0, count: min(count, SemanticEmbedding.dimension))
+        // VNFeaturePrintObservation.data contains the raw feature print as bytes
+        // elementType indicates the data format (typically .float for feature prints)
+        let data = observation.data
+
+        switch observation.elementType {
+        case .float:
+            // Extract Float32 values from the data buffer
+            guard let floatVector = floats(from: data) else {
+                logger.debug("Failed to convert feature print data to float array")
+                return nil
+            }
+            logger.debug("Extracted \(floatVector.count) floats from feature print observation")
+            return floatVector
+
+        case .double:
+            // Convert Double values to Float
+            guard data.count % MemoryLayout<Double>.size == 0 else { return nil }
+            let doubleCount = data.count / MemoryLayout<Double>.size
+            let floatVector: [Float] = data.withUnsafeBytes { ptr -> [Float] in
+                guard let base = ptr.baseAddress else { return [] }
+                let doublePtr = base.bindMemory(to: Double.self, capacity: doubleCount)
+                return (0..<doubleCount).map { Float(doublePtr[$0]) }
+            }
+            logger.debug("Extracted \(floatVector.count) floats (from doubles) from feature print observation")
+            return floatVector
+
+        @unknown default:
+            logger.warning("Unknown VNFeaturePrintObservation element type: \(String(describing: observation.elementType))")
+            return nil
+        }
     }
 
     /// Convert raw Data to [Float] by reading as Float32 little-endian.
@@ -155,6 +179,40 @@ public actor ImageAnalyzer {
             }
             return out
         }
+    }
+
+    /// Reduce a high-dimensional vector to target dimension using average pooling.
+    /// This preserves more semantic information than simple truncation by averaging
+    /// groups of consecutive values.
+    ///
+    /// - Parameters:
+    ///   - vector: The source vector (must be larger than targetDimension)
+    ///   - targetDimension: The desired output dimension
+    /// - Returns: A reduced vector of targetDimension length
+    private func reduceVectorByAveragePooling(_ vector: [Float], targetDimension: Int) -> [Float] {
+        guard vector.count > targetDimension, targetDimension > 0 else {
+            return Array(vector.prefix(targetDimension))
+        }
+
+        var result = [Float](repeating: 0.0, count: targetDimension)
+        let sourceCount = vector.count
+        let poolSize = Float(sourceCount) / Float(targetDimension)
+
+        for i in 0..<targetDimension {
+            let startIdx = Int(Float(i) * poolSize)
+            let endIdx = min(Int(Float(i + 1) * poolSize), sourceCount)
+            let chunkSize = endIdx - startIdx
+
+            if chunkSize > 0 {
+                var sum: Float = 0.0
+                for j in startIdx..<endIdx {
+                    sum += vector[j]
+                }
+                result[i] = sum / Float(chunkSize)
+            }
+        }
+
+        return result
     }
 }
 

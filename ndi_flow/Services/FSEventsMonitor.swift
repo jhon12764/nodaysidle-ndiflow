@@ -241,6 +241,9 @@ final class FSEventsMonitor: @unchecked Sendable {
 
     /// Schedule (or reschedule) a debounce flush. Must be called on `serialAccessQueue` or in protected context.
     private func scheduleDebounceFlushLocked() {
+        // Don't schedule new work if monitoring has stopped (no active continuation)
+        guard continuation != nil else { return }
+
         // Cancel previous work item
         debounceWorkItem?.cancel()
 

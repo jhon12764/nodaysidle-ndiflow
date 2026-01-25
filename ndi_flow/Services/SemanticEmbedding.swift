@@ -45,8 +45,10 @@ public struct SemanticEmbedding: Codable, Sendable, Equatable, Hashable {
 
     // MARK: - Initialization
 
-    /// Create a SemanticEmbedding with a provided vector. Vector must match `SemanticEmbedding.dimension`.
-    /// If the vector length mismatches, this initializer will trap in debug builds.
+    /// Create a SemanticEmbedding with a provided vector.
+    /// If the vector length differs from `SemanticEmbedding.dimension`, it will be adjusted:
+    /// - Vectors longer than expected are truncated
+    /// - Vectors shorter than expected are zero-padded
     public init(
         vector: [Float],
         keywords: [String] = [],
@@ -55,8 +57,16 @@ public struct SemanticEmbedding: Codable, Sendable, Equatable, Hashable {
         confidence: Float = 0.0,
         analysisTimestamp: Date = Date()
     ) {
-        precondition(vector.count == Self.dimension, "Embedding vector must be exactly \(Self.dimension) elements.")
-        self.vector = vector
+        // Gracefully handle dimension mismatches instead of crashing
+        if vector.count == Self.dimension {
+            self.vector = vector
+        } else if vector.count > Self.dimension {
+            // Truncate to expected dimension
+            self.vector = Array(vector.prefix(Self.dimension))
+        } else {
+            // Pad with zeros to reach expected dimension
+            self.vector = vector + Array(repeating: 0.0, count: Self.dimension - vector.count)
+        }
         self.keywords = keywords
         self.labels = labels
         self.analysisType = analysisType
