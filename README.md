@@ -217,4 +217,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**ndi_flow** — *No Days Idle*
+**ndi_flow** — *NODAYSIDLE*
